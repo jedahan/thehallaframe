@@ -5,24 +5,12 @@
     <title>Cecropia's The Hall VR in A-Frame</title>
 
 
-    <meta property="og:title" content="Cecropia's The Hall VR in A-Frame" />
+    <meta property="og:title" content="WCMA-Frame" />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://cecropia.github.io/thehallaframe/" />
-    <meta property="og:image" content="https://cecropia.github.io/thehallaframe/screenshots/thehall1.jpg" />
-    <meta property="og:description" content="WebVR demo that displays art " />
+    <meta property="og:url" content="https://github.com/wcmaart/api/" />
 
-    <meta name="twitter:card" content="summary_large_image">
-
-    <meta name="twitter:title" content="Cecropia's The Hall VR in A-Frame">
-    <meta name="twitter:description" content="WebVR demo that displays art ">
-    <meta name="twitter:image" content="https://cecropia.github.io/thehallaframe/screenshots/thehall1.jpg">
-
-
-
-
-    <link rel="icon" href="favicon.png">
     <link href="https://fonts.googleapis.com/css?family=Poiret+One" rel="stylesheet">
-    <meta name="description" content="Cecropia's The Hall VR in A-Frame">
+    <meta name="description" content="WCMA-Frame based on Cecropia's The Hall VR">
 
     <link rel="stylesheet" type="text/css" href="style.css">
 
@@ -41,16 +29,13 @@
     <script src="js/envMapMaterial.js"></script>
     <script src="js/ctm_component.js"></script>
     <script src="js/mobile_component.js"></script>
-
   </head>
 
   <body>
 
     <div id="container" class="container">
       <div class="info">
-        <div class="company"><a href="http://www.cecropiasolutions.com" target="_blank">cecropiasolutions.com</a></div>
         <div class="title">The Hall</div>
-        <div class="logo"><a href="http://www.cecropiasolutions.com" target="_blank"><img src="img/cec_logo.png"></a></div>
         <a class="button" id="start_experience" href="#">start experience</a>
         <div class="instructions">
           <div><strong>VR</strong>: Hand controllers and teleport with trigger.</div>
@@ -62,7 +47,7 @@
 
     <!--<a-scene stats>-->
 
-    <a-scene>
+<a-scene inspector="url: https://aframe.io/releases/0.3.0/aframe-inspector.min.js">
 
       <a-entity mobile></a-entity>
 
@@ -240,7 +225,7 @@
       <a-entity obj-model="obj: #floor-obj;" material="src: #floor-texture; normalMap: #floor_normal-texture; metalness: 0.6" id="floor"></a-entity>
       <a-entity obj-model="obj: #hall-obj;" material="src: #hall-texture" id="hall"></a-entity>
       <a-entity obj-model="obj: #hall_low_floor-obj;" material="opacity: 0.0" id="hall_low_floor"></a-entity>
-      <a-entity obj-model="obj: #acropolis-obj;" material="src: #acropolis-texture"></a-entity>
+      <a-entity id='testid' obj-model="obj: #acropolis-obj;" material="src: #acropolis-texture"></a-entity>
       <a-entity obj-model="obj: #castle_lake-obj;" material="src: #castle_lake-texture"></a-entity>
       <a-entity obj-model="obj: #good_samaritan-obj;" material="src: #good_samaritan-texture"></a-entity>
       <a-entity obj-model="obj: #moonlight-obj;" material="src: #moonlight-texture"></a-entity>
@@ -327,14 +312,50 @@
     <script src="main.js"></script>
 
     <script>
-      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+      let query = `{
+        Artworks(ids: [123]) {
+          filename
+          title
+        }
+      }`
+      query = `{
+        getObject(id: 123) {
+          primaryMedia {
+            value
+          }
+        }
+      }`
 
-      ga('create', 'UA-92113119-1', 'auto');
-      ga('send', 'pageview');
+      fetch('http://localhost:4000/graphql', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({query})
+      })
+        .then(res => res.json())
+        .then(response => {
+          if (response.data) {
+            let img = document.getElementById('loadedimg')
+            const relative = response.data.getObject.primaryMedia.value
+            const src = `http://egallery.williams.edu/${relative}`
+            const create = !img
+            if (create) {
+              img = document.createElement('img')
+            }
 
+            img.setAttribute('id', 'loadedimg')
+            img.setAttribute('src', src)
+            if (create) {
+              let assets = document.querySelector('a-assets')
+              assets.appendChild(img)
+            }
+
+            setTimeout(() => {
+              const el = document.getElementById('testid')
+                .setAttribute('material', {src: '#loadedimg'})
+              console.log(el)
+            }, 300)
+          }
+        })
     </script>
 
   </body>
