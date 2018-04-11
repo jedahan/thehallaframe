@@ -333,10 +333,11 @@
       })
         .then(res => res.json())
         .then(response => {
+          console.dir({response})
           if (response.data) {
             let img = document.getElementById('loadedimg')
             const relative = response.data.getObject.primaryMedia.value
-            const src = `http://egallery.williams.edu/${relative}`
+            const src = `http://localhost:4000/egallery/${relative}`
             const create = !img
             if (create) {
               img = document.createElement('img')
@@ -349,11 +350,11 @@
               assets.appendChild(img)
             }
 
-            setTimeout(() => {
-              const el = document.getElementById('testid')
-                .setAttribute('material', {src: '#loadedimg'})
+            img.addEventListener('load', () => {
+              let el = document.getElementById('testid')
+              el.setAttribute('material', {src: '#loadedimg'})
               console.log(el)
-            }, 300)
+            })
           }
         })
     </script>
