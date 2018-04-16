@@ -114,7 +114,7 @@
           const assets = document.querySelector('a-assets')
           const relative = response.data.getObject.primaryMedia.value
           const src = `http://localhost:4000/egallery/${relative}`
-          
+
           const img = document.createElement('img')
           img.setAttribute('id', 'loadedimg')
           img.setAttribute('crossorigin', 'anonymous');
@@ -129,6 +129,7 @@
 
           assets.appendChild(img)
         })
+        .catch(console.dir)
     </script>
 
   </body>
